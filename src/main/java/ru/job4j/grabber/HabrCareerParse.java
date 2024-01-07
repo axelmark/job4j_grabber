@@ -6,11 +6,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.grabber.utils.DateTimeParser;
+import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
 import java.time.*;
 
-public class HabrCareerParse implements DateTimeParser {
+public class HabrCareerParse {
 
     private static final String SOURCE_LINK = "https://career.habr.com";
     public static final String PREFIX = "/vacancies?page=";
@@ -18,7 +19,7 @@ public class HabrCareerParse implements DateTimeParser {
 
     public static void main(String[] args) throws IOException {
         int pageNumber = 1;
-        HabrCareerParse habrCareerParse = new HabrCareerParse();
+        HabrCareerDateTimeParser timeParser = new HabrCareerDateTimeParser();
 
         String fullLink = "%s%s%d%s".formatted(SOURCE_LINK, PREFIX, pageNumber, SUFFIX);
         Connection connection = Jsoup.connect(fullLink);
@@ -30,15 +31,10 @@ public class HabrCareerParse implements DateTimeParser {
             String vacancyName = titleElement.text();
             Element dateElement = row.select(".vacancy-card__date").first();
             String dateChild = dateElement.child(0).attr("datetime");
-            LocalDateTime dateTime = habrCareerParse.parse(dateChild);
+
+            LocalDateTime dateTime = timeParser.parse(dateChild);
             String link = String.format("%s%s %s", SOURCE_LINK, linkElement.attr("href"), dateTime);
             System.out.printf("%s %s%n", vacancyName, link);
         });
-    }
-
-    @Override
-    public LocalDateTime parse(String s) {
-        Instant instant = Instant.parse(s);
-        return LocalDateTime.ofInstant(instant, ZoneId.of(ZoneOffset.UTC.getId()));
     }
 }
