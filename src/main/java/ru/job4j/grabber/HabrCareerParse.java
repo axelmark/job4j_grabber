@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.time.*;
 
 public class HabrCareerParse {
-
     private static final String SOURCE_LINK = "https://career.habr.com";
     public static final String PREFIX = "/vacancies?page=";
     public static final String SUFFIX = "&q=Java%20developer&type=all";
@@ -33,14 +32,25 @@ public class HabrCareerParse {
                 Element dateElement = row.select(".vacancy-card__date").first();
                 String dateChild = dateElement.child(0).attr("datetime");
 
+                String descLink = "%s%s".formatted(SOURCE_LINK, linkElement.attr("href"));
+                String descriptions = retrieveDescription(descLink);
+
                 LocalDateTime dateTime = timeParser.parse(dateChild);
-                String link = String.format("%s%s %s", SOURCE_LINK, linkElement.attr("href"), dateTime);
+                String link = String.format("%s%s %s %s", SOURCE_LINK, linkElement.attr("href"), dateTime, descriptions);
                 System.out.printf("%s %s%n", vacancyName, link);
             });
         }
     }
 
-    private String retrieveDescription(String link) {
-        return null;
+    private static String retrieveDescription(String link) {
+        Connection connection = Jsoup.connect(link);
+        String resString;
+        try {
+            Document document = connection.get();
+            resString = document.select(".faded-content__body").text();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return resString;
     }
 }
