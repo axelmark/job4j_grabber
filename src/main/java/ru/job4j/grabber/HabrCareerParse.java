@@ -19,40 +19,33 @@ public class HabrCareerParse implements Parse {
     private final DateTimeParser dateTimeParser;
     private List<Post> posts = new ArrayList<>();
 
-
     public HabrCareerParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
     }
 
     @Override
     public List<Post> list(String link) {
-
-        for (int i = 0; i < 5; i++) {
-            Connection connection = Jsoup.connect(link);
+        int pageNumber = 1;
+        for (int i = pageNumber; i < 6; i++) {
+            Connection connection = Jsoup.connect("%s%s".formatted(link, i));
             Document document = null;
-
             try {
                 document = connection.get();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
             Elements rows = document.select(".vacancy-card__inner");
             rows.forEach(row -> {
                 Element titleElement = row.select(".vacancy-card__title").first();
                 Element linkElement = titleElement.child(0);
                 String vacancyName = titleElement.text();
-
                 Element dateElement = row.select(".vacancy-card__date").first();
                 String dateChild = dateElement.child(0).attr("datetime");
-
                 String descLink = "%s%s".formatted(SOURCE_LINK, linkElement.attr("href"));
                 String descriptions = retrieveDescription(descLink);
-
                 posts.add(new Post(vacancyName, SOURCE_LINK, descriptions, dateTimeParser.parse(dateChild)));
             });
         }
-
         return posts;
     }
 
@@ -69,7 +62,7 @@ public class HabrCareerParse implements Parse {
     }
 
     public static void main(String[] args) throws IOException {
-       /* int pageNumber = 1;
+      /*  int pageNumber = 1;
         String fullLink = "%s%s%d%s".formatted(SOURCE_LINK, PREFIX, pageNumber, SUFFIX);*/
     }
 }

@@ -5,11 +5,27 @@ import java.util.Objects;
 
 public class Post {
 
-    Integer id;
-    String title;
-    String link;
-    String description;
-    LocalDateTime created;
+    private Integer id;
+    private String title;
+    private String link;
+    private String description;
+    private LocalDateTime created;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
 
     public Post(String title, String link, String description, LocalDateTime created) {
         this.title = title;
