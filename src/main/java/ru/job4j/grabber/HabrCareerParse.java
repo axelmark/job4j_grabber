@@ -29,6 +29,7 @@ public class HabrCareerParse {
                 Element titleElement = row.select(".vacancy-card__title").first();
                 Element linkElement = titleElement.child(0);
                 String vacancyName = titleElement.text();
+
                 Element dateElement = row.select(".vacancy-card__date").first();
                 String dateChild = dateElement.child(0).attr("datetime");
 
@@ -37,5 +38,9 @@ public class HabrCareerParse {
                 System.out.printf("%s %s%n", vacancyName, link);
             });
         }
+    }
+
+    private String retrieveDescription(String link) {
+        return null;
     }
 }
