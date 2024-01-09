@@ -43,7 +43,7 @@ public class HabrCareerParse implements Parse {
                 String dateChild = dateElement.child(0).attr("datetime");
                 String descLink = "%s%s".formatted(SOURCE_LINK, linkElement.attr("href"));
                 String descriptions = retrieveDescription(descLink);
-                posts.add(new Post(vacancyName, SOURCE_LINK, descriptions, dateTimeParser.parse(dateChild)));
+                posts.add(new Post(vacancyName, descLink, descriptions, dateTimeParser.parse(dateChild)));
             });
         }
         return posts;
@@ -59,10 +59,5 @@ public class HabrCareerParse implements Parse {
             throw new RuntimeException(e);
         }
         return resString;
-    }
-
-    public static void main(String[] args) throws IOException {
-      /*  int pageNumber = 1;
-        String fullLink = "%s%s%d%s".formatted(SOURCE_LINK, PREFIX, pageNumber, SUFFIX);*/
     }
 }

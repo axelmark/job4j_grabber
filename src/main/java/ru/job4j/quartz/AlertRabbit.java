@@ -50,7 +50,7 @@ public class AlertRabbit {
 
     public static String getConfig(String configName) {
         Properties config = new Properties();
-        try (InputStream in = Rabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
+        try (InputStream in = Rabbit.class.getClassLoader().getResourceAsStream("app.properties")) {
             config.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -2,26 +2,21 @@ package ru.job4j.grabber;
 
 import ru.job4j.Post;
 
-import java.io.InputStream;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class PsqlStore implements Store {
-    private Connection connection;
+    private final Connection connection;
 
-    public PsqlStore() {
-        try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
-            config.load(in);
+    public PsqlStore(Properties config) {
+        try {
             Class.forName(config.getProperty("driver-class-name"));
             connection = DriverManager.getConnection(
                     config.getProperty("url"),
                     config.getProperty("username"),
-                    config.getProperty("password")
-            );
+                    config.getProperty("password"));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -91,11 +86,5 @@ public class PsqlStore implements Store {
         if (connection != null) {
             connection.close();
         }
-    }
-
-    public static void main(String[] args) {
-        PsqlStore store = new PsqlStore();
-        store.save(new Post("title", "link", "desc", LocalDateTime.now()));
-        store.save(new Post("title", "Link", "desc", LocalDateTime.now()));
     }
 }
