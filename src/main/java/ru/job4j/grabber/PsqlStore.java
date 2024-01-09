@@ -68,18 +68,22 @@ public class PsqlStore implements Store {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    post = new Post(
-                            resultSet.getString("title"),
-                            resultSet.getString("link"),
-                            resultSet.getString("description"),
-                            resultSet.getTimestamp("created").toLocalDateTime()
-                    );
+                    post = collectPost(resultSet);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return post;
+    }
+
+    private Post collectPost(ResultSet resultSet) throws SQLException {
+        return new Post(
+                resultSet.getString("title"),
+                resultSet.getString("link"),
+                resultSet.getString("description"),
+                resultSet.getTimestamp("created").toLocalDateTime()
+        );
     }
 
     @Override
