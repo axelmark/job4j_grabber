@@ -6,6 +6,9 @@ import ru.job4j.Post;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,7 +57,29 @@ public class Grabber implements Grab {
             Parse parse = (Parse) map.get("parse");
             List<Post> posts = parse.list(link);
             posts.forEach(store::save);
+            Grabber.web(store, 9000);
         }
+    }
+
+    public static void web(Store store, int port) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(port)) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write(post.toString().getBytes(StandardCharsets.UTF_8));
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static void main(String[] args) throws Exception {
